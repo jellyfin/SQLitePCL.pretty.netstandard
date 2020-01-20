@@ -53,27 +53,6 @@ namespace SQLitePCL.pretty
             }
         }
 
-        /*
-        /// <summary>
-        /// Bind the statement parameters to the key-value pairs in <paramref name="pairs"/>.
-        /// </summary>
-        /// <remarks>
-        /// Bind parameters may be <see langword="null"/>, any numeric type, or an instance of <see cref="string"/>,
-        /// byte[], or <see cref="Stream"/>.
-        /// </remarks>
-        /// <param name="This">The statement.</param>
-        /// <param name="pairs">An enumerable of keyvalue pairs keyed by bind parameter name.</param>
-        internal static void Bind(this IStatement This, IEnumerable<KeyValuePair<string,object>> pairs)
-        {
-            Contract.Requires(This != null);
-            Contract.Requires(pairs != null);
-
-            foreach (var kvp in pairs)
-            {
-                This.BindParameters[kvp.Key].Bind(kvp.Value);
-            }
-        }*/
-
         /// <summary>
         /// Executes the <see cref="IStatement"/> with provided bind parameter values.
         /// </summary>
