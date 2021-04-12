@@ -36,7 +36,7 @@ namespace SQLitePCL.pretty.Tests
             }
         }
 
-        /* FIXME: [Fact]
+        [Fact]
         public void TestMemory()
         {
             using (var db = SQLite3.OpenInMemory())
@@ -49,7 +49,7 @@ namespace SQLitePCL.pretty.Tests
                 SQLite3.ResetMemoryHighWater();
                 Assert.Equal(SQLite3.MemoryHighWater, SQLite3.MemoryUsed);
             }
-        }*/
+        }
 
         [Fact]
         public void TestOpen()
