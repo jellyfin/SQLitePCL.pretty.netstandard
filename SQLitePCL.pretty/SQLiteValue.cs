@@ -433,7 +433,7 @@ namespace SQLitePCL.pretty
 
         public ReadOnlySpan<byte> ToBlob()
         {
-            Span<byte> span = new byte[11];
+            Span<byte> span = new byte[20];
             if (!Utf8Formatter.TryFormat(value, span, out var bytesWritten))
             {
                 ThrowHelper.ThrowFormatException();
@@ -601,7 +601,7 @@ namespace SQLitePCL.pretty
             this.ToString().ToSQLiteValue().ToInt64();
 
         public override string ToString() =>
-            Encoding.UTF8.GetString(value, 0, value.Length);
+            Encoding.UTF8.GetString(value);
     }
 
     internal sealed class ResultSetValueImpl : IResultSetValue
@@ -637,7 +637,7 @@ namespace SQLitePCL.pretty
             raw.sqlite3_column_int64(stmt.sqlite3_stmt, index);
 
         public override string ToString() =>
-            raw.sqlite3_column_text(stmt.sqlite3_stmt, index).utf8_to_string();
+            raw.sqlite3_column_text(stmt.sqlite3_stmt, index).utf8_to_string() ?? string.Empty;
     }
 
     internal class ZeroBlob : ISQLiteValue
@@ -661,6 +661,7 @@ namespace SQLitePCL.pretty
 
         public long ToInt64() => 0;
 
-        public override string ToString() => string.Empty;
+        public override string ToString()
+            => Encoding.UTF8.GetString(ToBlob());
     }
 }

@@ -14,19 +14,21 @@
    limitations under the License.
 */
 
-using Xunit;
 using System;
 using System.IO;
 using System.Linq;
-using System.Reactive.Linq;
-using System.Reactive.Threading.Tasks;
 using System.Text;
-using System.Threading.Tasks;
+using Xunit;
 
-namespace SQLitePCL.pretty.tests
+namespace SQLitePCL.pretty.Tests
 {
     public class Example
     {
+        static Example()
+        {
+            Batteries_V2.Init();
+        }
+
         [Fact]
         public void DoExample()
         {
@@ -67,41 +69,6 @@ namespace SQLitePCL.pretty.tests
                 }
 
                 db.Execute("DROP TABLE foo;");
-            }
-        }
-
-        [Fact]
-        public async Task DoExampleAsync()
-        {
-            using (var db = SQLite3.OpenInMemory().AsAsyncDatabaseConnection())
-            using (var stream = new MemoryStream(Encoding.UTF8.GetBytes("I'm a byte stream")))
-            {
-                await db.ExecuteAllAsync(
-                    @"CREATE TABLE foo (w int, x float, y string, z blob);
-                        INSERT INTO foo (w,x,y,z) VALUES (0, 0, '', null);");
-
-                await db.ExecuteAsync("INSERT INTO foo (w, x, y, z) VALUES (?, ?, ?, ?)", 1, 1.1, "hello", stream);
-
-                var dst =
-                    await db.Query("SELECT rowid, z FROM foo where y = 'hello'")
-                            .Select(row => db.OpenBlobAsync(row[1].ColumnInfo, row[0].ToInt64(), true))
-                            .FirstAsync()
-                            .ToTask()
-                            .Unwrap();
-
-                using (dst)
-                {
-                    await stream.CopyToAsync(dst);
-                }
-
-                await db.Query("SELECT rowid, * FROM foo")
-                        .Select(row =>
-                            row[0].ToInt64() + ": " +
-                            row[1].ToInt() + ", " +
-                            row[2].ToInt64() + ", " +
-                            row[3].ToString() + ", " +
-                            row[4].ToString())
-                        .Do(Console.WriteLine);
             }
         }
     }

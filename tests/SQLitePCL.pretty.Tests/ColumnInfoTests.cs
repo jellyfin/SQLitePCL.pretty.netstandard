@@ -14,10 +14,10 @@
    limitations under the License.
 */
 
-using Xunit;
 using System;
+using Xunit;
 
-namespace SQLitePCL.pretty.tests
+namespace SQLitePCL.pretty.Tests
 {
     public class ColumnInfoTests
     {
@@ -35,7 +35,7 @@ namespace SQLitePCL.pretty.tests
                 };
 
             Assert.False(new ColumnInfo("", "", "", "", "").Equals(null));
-            Assert.False(new ColumnInfo("", "", "", "", "").Equals(new Object()));
+            Assert.False(new ColumnInfo("", "", "", "", "").Equals(new object()));
 
             for (int i = 0; i < tests.Length; i++)
             {
@@ -48,7 +48,7 @@ namespace SQLitePCL.pretty.tests
                     {
                         Assert.True(fst.Equals(fst));
                         Assert.True(snd.Equals(snd));
-                        Assert.Equal(fst, snd);
+                        Assert.Equal(snd, fst);
                         Assert.True(fst == snd);
                         Assert.False(fst != snd);
                     }
@@ -62,26 +62,19 @@ namespace SQLitePCL.pretty.tests
             }
         }
 
-        [Fact]
-        public void TestGetHashcode()
+        [Theory]
+        [InlineData("", "", "", "", "")]
+        [InlineData("name","", "", "", "")]
+        [InlineData("name","db", "", "", "")]
+        [InlineData("name","db", "table", "", "")]
+        [InlineData("name","db", "table", "column", "")]
+        [InlineData("name","db", "table", "column", "Variant")]
+        public void TestGetHashcode(string item1, string item2, string item3, string item4, string item5)
         {
-            Tuple<string, string, string, string, string>[] tests =
-                {
-                    Tuple.Create("", "", "", "", ""),
-                    Tuple.Create("name","", "", "", ""),
-                    Tuple.Create("name","db", "", "", ""),
-                    Tuple.Create("name","db", "table", "", ""),
-                    Tuple.Create("name","db", "table", "column", ""),
-                    Tuple.Create("name","db", "table", "column", "Variant"),
-                };
+            var fst = new ColumnInfo(item1, item2, item3, item4, item5);
+            var snd = new ColumnInfo(item1, item2, item3, item4, item5);
 
-            foreach (var test in tests)
-            {
-                var fst = new ColumnInfo(test.Item1, test.Item2, test.Item3, test.Item4, test.Item5);
-                var snd = new ColumnInfo(test.Item1, test.Item2, test.Item3, test.Item4, test.Item5);
-
-                Assert.Equal(fst.GetHashCode(), snd.GetHashCode());
-            }
+            Assert.Equal(snd.GetHashCode(), fst.GetHashCode());
         }
 
         [Fact]
@@ -113,8 +106,8 @@ namespace SQLitePCL.pretty.tests
                     }
                     else if (i == j)
                     {
-                        Assert.Equal(tests[i].CompareTo(tests[j]), 0);
-                        Assert.Equal(((IComparable)tests[i]).CompareTo(tests[j]), 0);
+                        Assert.Equal(0, tests[i].CompareTo(tests[j]));
+                        Assert.Equal(0, ((IComparable)tests[i]).CompareTo(tests[j]));
 
                         Assert.True(tests[i] >= tests[j]);
                         Assert.True(tests[i] <= tests[j]);
@@ -135,10 +128,10 @@ namespace SQLitePCL.pretty.tests
             }
 
             ColumnInfo nullColumnInfo = null;
-            Assert.Equal(new ColumnInfo("", "", "", "", "").CompareTo(nullColumnInfo), 1);
+            Assert.Equal(1, new ColumnInfo("", "", "", "", "").CompareTo(nullColumnInfo));
 
             object nullObj = null;
-            Assert.Equal(((IComparable)new ColumnInfo("", "", "", "", "")).CompareTo(nullObj), 1);
+            Assert.Equal(1, ((IComparable)new ColumnInfo("", "", "", "", "")).CompareTo(nullObj));
         }
     }
 }

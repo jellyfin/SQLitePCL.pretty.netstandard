@@ -1,7 +1,7 @@
-﻿using Xunit;
-using System;
+﻿using System;
+using Xunit;
 
-namespace SQLitePCL.pretty.tests
+namespace SQLitePCL.pretty.Tests
 {
     public class TableColumnMetadataTests
     {
@@ -19,7 +19,7 @@ namespace SQLitePCL.pretty.tests
                 };
 
             Assert.False(new TableColumnMetadata("", "", false, false, false).Equals(null));
-            Assert.False(new TableColumnMetadata("", "", false, false, false).Equals(new Object()));
+            Assert.False(new TableColumnMetadata("", "", false, false, false).Equals(new object()));
 
             for (int i = 0; i < tests.Length; i++)
             {
@@ -32,7 +32,7 @@ namespace SQLitePCL.pretty.tests
                     {
                         Assert.True(fst.Equals(fst));
                         Assert.True(snd.Equals(snd));
-                        Assert.Equal(fst, snd);
+                        Assert.Equal(snd, fst);
                         Assert.True(fst == snd);
                         Assert.False(fst != snd);
                     }
@@ -46,26 +46,20 @@ namespace SQLitePCL.pretty.tests
             }
         }
 
-        [Fact]
-        public void TestGetHashcode()
+        [Theory]
+        [InlineData("", "", false, false, false)]
+        [InlineData("a", "", false, false, false)]
+        [InlineData("a", "b", false, false, false)]
+        [InlineData("a", "b", true, false, false)]
+        [InlineData("a", "b", true, true, false)]
+        [InlineData("a", "b", true, true, true)]
+        public void TestGetHashcode(string item1, string item2, bool item3, bool item4, bool item5)
         {
-            Tuple<string, string, bool, bool, bool>[] tests =
-                {
-                    Tuple.Create("", "", false, false, false),
-                    Tuple.Create("a", "", false, false, false),
-                    Tuple.Create("a", "b", false, false, false),
-                    Tuple.Create("a", "b", true, false, false),
-                    Tuple.Create("a", "b", true, true, false),
-                    Tuple.Create("a", "b", true, true, true),
-                };
 
-            foreach (var test in tests)
-            {
-                var fst = new TableColumnMetadata(test.Item1, test.Item2, test.Item3, test.Item4, test.Item5);
-                var snd = new TableColumnMetadata(test.Item1, test.Item2, test.Item3, test.Item4, test.Item5);
+            var fst = new TableColumnMetadata(item1, item2, item3, item4, item5);
+            var snd = new TableColumnMetadata(item1, item2, item3, item4, item5);
 
-                Assert.Equal(fst.GetHashCode(), snd.GetHashCode());
-            }
+            Assert.Equal(snd.GetHashCode(), fst.GetHashCode());
         }
 
         [Fact]
@@ -97,8 +91,8 @@ namespace SQLitePCL.pretty.tests
                     }
                     else if (i == j)
                     {
-                        Assert.Equal(tests[i].CompareTo(tests[j]), 0);
-                        Assert.Equal(((IComparable)tests[i]).CompareTo(tests[j]), 0);
+                        Assert.Equal(0, tests[i].CompareTo(tests[j]));
+                        Assert.Equal(0, ((IComparable)tests[i]).CompareTo(tests[j]));
 
                         Assert.True(tests[i] >= tests[j]);
                         Assert.True(tests[i] <= tests[j]);
@@ -119,10 +113,10 @@ namespace SQLitePCL.pretty.tests
             }
 
             TableColumnMetadata nullColumnInfo = null;
-            Assert.Equal(new TableColumnMetadata("", "", false, false, false).CompareTo(nullColumnInfo), 1);
+            Assert.Equal(1, new TableColumnMetadata("", "", false, false, false).CompareTo(nullColumnInfo));
 
             object nullObj = null;
-            Assert.Equal(((IComparable)new TableColumnMetadata("", "", false, false, false)).CompareTo(nullObj), 1);
+            Assert.Equal(1, ((IComparable)new TableColumnMetadata("", "", false, false, false)).CompareTo(nullObj));
         }
     }
 }
