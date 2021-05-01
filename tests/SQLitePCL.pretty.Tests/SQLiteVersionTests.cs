@@ -17,7 +17,7 @@
 using Xunit;
 using System;
 
-namespace SQLitePCL.pretty.tests
+namespace SQLitePCL.pretty.Tests
 {
     public class SQLiteVersionTests
     {
@@ -66,7 +66,7 @@ namespace SQLitePCL.pretty.tests
             {
                 for (int j = i + 1; j < equalObjects.Length; j++)
                 {
-                    Assert.Equal(equalObjects[i].GetHashCode(), equalObjects[j].GetHashCode());
+                    Assert.Equal(equalObjects[j].GetHashCode(), equalObjects[i].GetHashCode());
                 }
             }
         }
@@ -95,24 +95,17 @@ namespace SQLitePCL.pretty.tests
         [Fact]
         public void TestToInt()
         {
-            Assert.Equal(SQLiteVersion.Of(3080911).ToInt(), 3080911);
+            Assert.Equal(3080911, SQLiteVersion.Of(3080911).ToInt());
         }
 
-        [Fact]
-        public void TestToString()
+        [Theory]
+        [InlineData(3008007, "3.8.7")]
+        [InlineData(44008007, "44.8.7")]
+        [InlineData(3008080, "3.8.80")]
+        [InlineData(3088007, "3.88.7")]
+        public void TestToString(int value, string expected)
         {
-            Tuple<int, string>[] tests =
-            {
-                Tuple.Create(3008007, "3.8.7"),
-                Tuple.Create(44008007, "44.8.7"),
-                Tuple.Create(3008080, "3.8.80"),
-                Tuple.Create(3088007, "3.88.7")
-            };
-
-            foreach (var test in tests)
-            {
-                Assert.Equal(test.Item2, SQLiteVersion.Of(test.Item1).ToString());
-            }
+            Assert.Equal(expected, SQLiteVersion.Of(value).ToString());
         }
     }
 }

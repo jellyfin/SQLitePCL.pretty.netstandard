@@ -16,13 +16,17 @@
 */
 
 using System;
-
 using Xunit;
 
-namespace SQLitePCL.pretty.tests
+namespace SQLitePCL.pretty.Tests
 {
-    public class test_cases
+    public class PrettyTests
     {
+        static PrettyTests()
+        {
+            Batteries_V2.Init();
+        }
+
         [Fact]
         public void test_error()
         {
@@ -39,10 +43,10 @@ namespace SQLitePCL.pretty.tests
                 {
                     fail = true;
 
-                    Assert.Equal(e.ErrorCode, ErrorCode.Constraint);
+                    Assert.Equal(ErrorCode.Constraint, e.ErrorCode);
 
                     // "Extended error codes for SQLITE_CONSTRAINT were added in 3.7.16"
-                    Assert.Equal(e.ExtendedErrorCode, ErrorCode.ConstraintUnique);
+                    Assert.Equal(ErrorCode.ConstraintUnique, e.ExtendedErrorCode);
                 }
                 Assert.True(fail);
             }
@@ -62,7 +66,7 @@ namespace SQLitePCL.pretty.tests
                 {
                     stmt.MoveNext();
                     int c = stmt.Current[0].ToInt();
-                    Assert.Equal(c, 3);
+                    Assert.Equal(3, c);
                 }
             }
         }

@@ -33,7 +33,7 @@ namespace SQLitePCL.pretty
         /// <returns>An IEnumerable of the scalar values.</returns>
         /// <param name="This">An enumerable of result set rows.</param>
         public static IEnumerable<IResultSetValue> SelectScalar(this IEnumerable<IReadOnlyList<IResultSetValue>> This) =>
-            This.Select(x => x.First());
+            This.Select(x => x[0]);
 
         /// <summary>
         /// Selects the value in the first column of the result set row as a <see cref="int"/>.
