@@ -367,7 +367,7 @@ namespace SQLitePCL.pretty
         }
     }
 
-    internal sealed class NativeValue : ISQLiteValue
+    internal struct NativeValue : ISQLiteValue
     {
         private readonly sqlite3_value value;
 
@@ -501,7 +501,7 @@ namespace SQLitePCL.pretty
         public override string ToString() => throw new NotSupportedException();
     }
 
-    internal class StringValue : ISQLiteValue
+    internal struct StringValue : ISQLiteValue
     {
         private static readonly Regex isNegative = new Regex("^[ ]*[-]");
         private static readonly Regex stringToDoubleCast = new Regex("^[ ]*([-]?)[0-9]+([.][0-9]+)?");
@@ -575,7 +575,7 @@ namespace SQLitePCL.pretty
         public override string ToString() => value;
     }
 
-    internal class BlobValue : ISQLiteValue
+    internal struct BlobValue : ISQLiteValue
     {
         private readonly byte[] value;
 
@@ -604,7 +604,7 @@ namespace SQLitePCL.pretty
             Encoding.UTF8.GetString(value);
     }
 
-    internal sealed class ResultSetValueImpl : IResultSetValue
+    internal struct ResultSetValueImpl : IResultSetValue
     {
         private readonly StatementImpl stmt;
         private readonly int index;
@@ -640,7 +640,7 @@ namespace SQLitePCL.pretty
             raw.sqlite3_column_text(stmt.sqlite3_stmt, index).utf8_to_string() ?? string.Empty;
     }
 
-    internal class ZeroBlob : ISQLiteValue
+    internal struct ZeroBlob : ISQLiteValue
     {
         private readonly int length;
 
