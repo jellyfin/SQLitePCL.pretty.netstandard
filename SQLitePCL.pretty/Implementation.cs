@@ -329,7 +329,7 @@ namespace SQLitePCL.pretty
         {
             for (int i = 0; i < this.Count; i++)
             {
-                var next = this[i];
+                var next = new BindParameterImpl(stmt.sqlite3_stmt, i);
                 yield return new KeyValuePair<string, IBindParameter>(next.Name, next);
             }
         }
@@ -440,7 +440,7 @@ namespace SQLitePCL.pretty
         {
             for (int i = 0; i < this.Count; i++)
             {
-                yield return this[i];
+                yield return ColumnInfo.Create(stmt, i);
             }
         }
 
@@ -464,7 +464,7 @@ namespace SQLitePCL.pretty
         {
             for (int i = 0; i < this.Count; i++)
             {
-                yield return this[i];
+                yield return stmt.ResultSetValueAt(i);
             }
         }
 
