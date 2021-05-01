@@ -900,28 +900,16 @@ namespace SQLitePCL.pretty
         private readonly sqlite3 db;
         private readonly OrderedSet<StatementImpl> statements = new OrderedSet<StatementImpl>();
 
+        private event EventHandler rollbackInternal;
+        private event EventHandler<DatabaseProfileEventArgs> profileInternal;
+        private event EventHandler<DatabaseTraceEventArgs> traceInternal;
+        private event EventHandler<DatabaseUpdateEventArgs> updateInternal;
+
         private bool disposed = false;
 
         internal SQLiteDatabaseConnection(sqlite3 db)
         {
             this.db = db;
-
-            // FIXME: Could argue that the shouldn't be setup until the first subscriber to the events
-            raw.sqlite3_rollback_hook(db, v => Rollback(this, EventArgs.Empty), null);
-
-            raw.sqlite3_trace(
-                db,
-                (v, stmt) => Trace(this, DatabaseTraceEventArgs.Create(stmt)),
-                null);
-
-            raw.sqlite3_profile(
-                db, (v, stmt, ts) => Profile(this, DatabaseProfileEventArgs.Create(stmt, TimeSpan.FromTicks(ts))),
-                null);
-
-            raw.sqlite3_update_hook(
-                db,
-                (v, type, database, table, rowid) => Update(this, DatabaseUpdateEventArgs.Create((ActionCode)type, database, table, rowid)),
-                null);
         }
 
         // We initialize the event handlers with empty delegates so that we don't
@@ -934,27 +922,111 @@ namespace SQLitePCL.pretty
         /// Occurs whenever a transaction is rolled back on the database connection.
         /// </summary>
         /// <seealso href="https://sqlite.org/c3ref/commit_hook.html"/>
-        public event EventHandler Rollback = (o, e) => { };
+        public event EventHandler Rollback
+        {
+            add
+            {
+                var first = rollbackInternal == null;
+                rollbackInternal += value;
+                if (first)
+                {
+                    raw.sqlite3_rollback_hook(db, v => rollbackInternal(this, EventArgs.Empty), null);
+                }
+            }
+            remove
+            {
+                rollbackInternal -= value;
+                if (rollbackInternal == null)
+                {
+                    raw.sqlite3_rollback_hook(db, null, null);
+                }
+            }
+        }
 
         /// <summary>
         /// Profiling event that occurs when a <see cref="IStatement"/> finishes.
         /// </summary>
         /// <seealso href="https://sqlite.org/c3ref/profile.html"/>
-        public event EventHandler<DatabaseProfileEventArgs> Profile = (o, e) => { };
+        public event EventHandler<DatabaseProfileEventArgs> Profile
+        {
+            add
+            {
+                var first = profileInternal == null;
+                profileInternal += value;
+                if (first)
+                {
+                    raw.sqlite3_profile(
+                        db, (v, stmt, ts) => profileInternal(this, DatabaseProfileEventArgs.Create(stmt, TimeSpan.FromTicks(ts))),
+                        null);
+                }
+            }
+            remove
+            {
+                profileInternal -= value;
+                if (profileInternal == null)
+                {
+                    raw.sqlite3_profile(db, (strdelegate_profile)null, null);
+                }
+            }
+        }
 
         /// <summary>
         /// Tracing event that occurs at various times when <see cref="IStatement"/>is running.
         /// </summary>
         /// <seealso href="https://sqlite.org/c3ref/profile.html"/>
-        public event EventHandler<DatabaseTraceEventArgs> Trace = (o, e) => { };
+        public event EventHandler<DatabaseTraceEventArgs> Trace
+        {
+            add
+            {
+                var first = traceInternal == null;
+                traceInternal += value;
+                if (first)
+                {
+                    raw.sqlite3_trace(
+                        db,
+                        (v, stmt) => traceInternal(this, DatabaseTraceEventArgs.Create(stmt)),
+                        null);
+                }
+            }
+            remove
+            {
+                traceInternal -= value;
+                if (traceInternal == null)
+                {
+                    raw.sqlite3_trace(db, (strdelegate_trace)null, null);
+                }
+            }
+        }
 
         /// <summary>
         /// Occurs whenever a row is updated, inserted or deleted in a rowid table.
         /// </summary>
         /// <seealso href="https://sqlite.org/c3ref/update_hook.html"/>
-        public event EventHandler<DatabaseUpdateEventArgs> Update = (o, e) => { };
+        public event EventHandler<DatabaseUpdateEventArgs> Update
+        {
+            add
+            {
+                var first = updateInternal == null;
+                updateInternal += value;
+                if (first)
+                {
+                    raw.sqlite3_update_hook(
+                        db,
+                        (v, type, database, table, rowid) => updateInternal(this, DatabaseUpdateEventArgs.Create((ActionCode)type, database, table, rowid)),
+                        null);
+                }
+            }
+            remove
+            {
+                updateInternal -= value;
+                if (updateInternal == null)
+                {
+                    raw.sqlite3_update_hook(db, (strdelegate_update)null, null);
+                }
+            }
+        }
 
-        internal event EventHandler Disposing = (o, e) => { };
+        internal event EventHandler Disposing;
 
         /// <inheritdoc/>
         public bool IsAutoCommit
@@ -1191,7 +1263,7 @@ namespace SQLitePCL.pretty
         {
             if (disposed) { return; }
 
-            this.Disposing(this, null);
+            this.Disposing?.Invoke(this, null);
 
             disposed = true;
 
