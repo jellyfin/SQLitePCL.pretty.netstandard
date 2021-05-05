@@ -131,24 +131,6 @@ namespace SQLitePCL.pretty
             This.WalCheckPoint(dbName, WalCheckPointMode.Passive, out _, out _);
         }
 
-        /*
-        /// <summary>
-        /// Runs a checkpoint on all databases on the connection.
-        /// </summary>
-        /// <param name="This">The database connection.</param>
-        /// <seealso href="https://www.sqlite.org/c3ref/wal_checkpoint.html"/>
-        public static void WalCheckPointAll(this IDatabaseConnection This)
-        {
-            Contract.Requires(This != null);
-
-            int nLog;
-            int nCkpt;
-
-            // If parameter zDb is NULL or points to a zero length string, then the specified operation is
-            // attempted on all WAL databases attached to database connection db
-            This.WalCheckPoint("", WalCheckPointMode.Passive, out nLog, out nCkpt);
-        }*/
-
         /// <summary>
         /// Compiles and executes a SQL statement.
         /// </summary>
@@ -339,21 +321,6 @@ namespace SQLitePCL.pretty
             Contract.Requires(columnInfo != null);
             return This.OpenBlob(columnInfo.DatabaseName, columnInfo.TableName, columnInfo.OriginName, rowId, canWrite);
         }
-
-        /*
-        /// <summary>
-        ///  Returns metadata about a specific column of a specific database table,
-        /// </summary>
-        /// <param name="This">The database connection.</param>
-        /// <param name="columnInfo">The ColumnInfo of the column whose metadata should be retrieved.</param>
-        /// <returns>The metadata of the column specified by columnInfo.</returns>
-        public static TableColumnMetadata GetTableColumnMetadata(this IDatabaseConnection This, ColumnInfo columnInfo)
-        {
-            Contract.Requires(This != null);
-            Contract.Requires(columnInfo != null);
-
-            return This.GetTableColumnMetadata(columnInfo.DatabaseName, columnInfo.TableName, columnInfo.OriginName);
-        }*/
 
         /// <summary>
         /// Executes the SQLite VACUUM command
