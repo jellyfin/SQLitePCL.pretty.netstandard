@@ -213,6 +213,7 @@ namespace SQLitePCL.pretty
 
             db.Disposing -= dbDisposing;
             db.RemoveStatement(this);
+            stmt.Close();
         }
 
         public bool MoveNext()
