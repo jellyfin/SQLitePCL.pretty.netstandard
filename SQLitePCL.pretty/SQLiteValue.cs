@@ -17,6 +17,7 @@
 
 using System;
 using System.Buffers.Text;
+using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -531,7 +532,7 @@ namespace SQLitePCL.pretty
             var result = stringToDoubleCast.Match(this.value);
             if (result.Success)
             {
-                if (double.TryParse(result.Value, out double parsed))
+                if (double.TryParse(result.Value, NumberStyles.Number, CultureInfo.InvariantCulture, out double parsed))
                 {
                     return parsed;
                 }
