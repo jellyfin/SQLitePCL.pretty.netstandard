@@ -15,6 +15,7 @@
 */
 
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using Xunit;
@@ -43,13 +44,13 @@ namespace SQLitePCL.pretty.Tests
         [Fact]
         public void TestToSQLiteValueExtensions()
         {
-            short testShort = 2;
+            const short testShort = 2;
             Assert.Equal(testShort.ToSQLiteValue().ToShort(), testShort);
 
-            byte testByte = 2;
+            const byte testByte = 2;
             Assert.Equal(testByte.ToSQLiteValue().ToByte(), testByte);
 
-            float testFloat = 2.0f;
+            const float testFloat = 2.0f;
             Assert.Equal(testFloat.ToSQLiteValue().ToFloat(), testFloat);
 
             TimeSpan testTimeSpan = new TimeSpan(100);
@@ -67,10 +68,10 @@ namespace SQLitePCL.pretty.Tests
             Guid testGuid = Guid.NewGuid();
             Assert.Equal(testGuid.ToSQLiteValue().ToGuid(), testGuid);
 
-            ushort testUShort = 1;
+            const ushort testUShort = 1;
             Assert.Equal(testUShort.ToSQLiteValue().ToUInt16(), testUShort);
 
-            sbyte testSByte = 1;
+            const sbyte testSByte = 1;
             Assert.Equal(testSByte.ToSQLiteValue().ToSByte(), testSByte);
 
             Uri uri = new Uri("http://www.example.com/path/to/resource?querystring#fragment");
@@ -83,16 +84,16 @@ namespace SQLitePCL.pretty.Tests
             Assert.Equal(0, false.ToSQLiteValue().ToInt());
             Assert.NotEqual(0, true.ToSQLiteValue().ToInt());
 
-            byte b = 8;
+            const byte b = 8;
             Assert.Equal(b, b.ToSQLiteValue().ToInt());
 
-            char c = 'c';
+            const char c = 'c';
             Assert.Equal((long) c, c.ToSQLiteValue().ToInt());
 
-            sbyte sb = 8;
+            const sbyte sb = 8;
             Assert.Equal(sb, sb.ToSQLiteValue().ToInt());
 
-            uint u = 8;
+            const uint u = 8;
             Assert.Equal(u, u.ToSQLiteValue().ToUInt32());
         }
 
@@ -110,112 +111,102 @@ namespace SQLitePCL.pretty.Tests
             }
         }
 
-        [Fact]
-        public void TestFloatValue()
+        [Theory]
+        [InlineData(0)]
+        [InlineData(0.0)]
+        [InlineData(1)]
+        [InlineData(1.0)]
+        [InlineData(1.11)]
+        [InlineData(1.7E+3)]
+        [InlineData(-195489100.8377)]
+        [InlineData(1.12345678901234567E100)]
+        [InlineData(-1.12345678901234567E100)]
+        [InlineData(double.MaxValue)]
+        [InlineData(double.MinValue)]
+        [InlineData(double.Epsilon)]
+        [InlineData(double.PositiveInfinity)]
+        [InlineData(double.NegativeInfinity)]
+        public void TestFloatValue(double value)
         {
-            double[] tests =
-            {
-                1,
-                1.0,
-                1.11,
-                1.7E+3,
-                -195489100.8377,
-                1.12345678901234567E100,
-                -1.12345678901234567E100
-            };
-
             using (var db = SQLite3.OpenInMemory())
             {
-                foreach (var test in tests)
+                db.Execute("CREATE TABLE foo (x real);");
+                db.Execute("INSERT INTO foo (x) VALUES (?)", value);
+
+                var rows = db.Query("SELECT x FROM foo;");
+                foreach (var row in rows)
                 {
-                    db.Execute("CREATE TABLE foo (x real);");
-                    db.Execute("INSERT INTO foo (x) VALUES (?)", test);
+                    var expected = row.Single();
+                    var result = value.ToSQLiteValue();
 
-                    var rows = db.Query("SELECT x FROM foo;");
-                    foreach (var row in rows)
-                    {
-                        var expected = row.Single();
-                        var result = test.ToSQLiteValue();
+                    Assert.Throws<NotSupportedException>(() => { var x = result.Length; });
+                    Assert.Throws<NotSupportedException>(() => { result.ToString(); });
+                    Assert.Throws<NotSupportedException>(() => { result.ToBlob(); });
 
-                        Assert.Throws<NotSupportedException>(() => { var x = result.Length; });
-                        Assert.Throws<NotSupportedException>(() => { result.ToString(); });
-                        Assert.Throws<NotSupportedException>(() => { result.ToBlob(); });
-
-                        Assert.Equal(result.SQLiteType, expected.SQLiteType);
-                        Assert.Equal(result.ToInt64(), expected.ToInt64());
-                        Assert.Equal(result.ToInt(), expected.ToInt());
-                    }
-
-                    db.Execute("DROP TABLE foo;");
+                    Assert.Equal(result.SQLiteType, expected.SQLiteType);
+                    Assert.Equal(result.ToInt64(), expected.ToInt64());
+                    Assert.Equal(result.ToInt(), expected.ToInt());
                 }
+
+                db.Execute("DROP TABLE foo;");
             }
         }
 
-        [Fact]
-        public void TestIntValue()
+        [Theory]
+        [InlineData(0)]
+        [InlineData(-1234)]
+        [InlineData(int.MaxValue)]
+        [InlineData(int.MinValue)]
+        [InlineData(long.MaxValue)]
+        [InlineData(long.MinValue)]
+        public void TestIntValue(long value)
         {
-            long[] tests =
-                {
-                    2147483647, // Max int
-                    -2147483648, // Min int
-                    9223372036854775807, // Max Long
-                    -9223372036854775808, // Min Long
-                    -1234
-                };
-
             using (var db = SQLite3.OpenInMemory())
             {
-                foreach (var test in tests)
+                db.Execute("CREATE TABLE foo (x int);");
+                db.Execute("INSERT INTO foo (x) VALUES (?)", value);
+
+                var rows = db.Query("SELECT x FROM foo;");
+                foreach (var row in rows)
                 {
-                    db.Execute("CREATE TABLE foo (x int);");
-                    db.Execute("INSERT INTO foo (x) VALUES (?)", test);
-
-                    var rows = db.Query("SELECT x FROM foo;");
-                    foreach (var row in rows)
-                    {
-                        compare(row.Single(), test.ToSQLiteValue());
-                    }
-
-                    db.Execute("DROP TABLE foo;");
+                    compare(row.Single(), value.ToSQLiteValue());
                 }
+
+                db.Execute("DROP TABLE foo;");
             }
         }
 
-        [Fact]
-        public void TestBlobValue()
+        [Theory]
+        [InlineData("")]
+        [InlineData("  1234.56")]
+        [InlineData("  1234,56")]
+        [InlineData("  1.234,56")]
+        [InlineData(" 1234.abasd")]
+        [InlineData("abacdd\u10FFFF")]
+        [InlineData("2147483647")] // Max int
+        [InlineData("-2147483648")] // Min int
+        [InlineData("9223372036854775807")] // Max Long
+        [InlineData("-9223372036854775808")] // Min Long
+        [InlineData("9923372036854775809")] // Greater than max long
+        [InlineData("-9923372036854775809")] // Less than min long
+        [InlineData("3147483648")] // Long
+        [InlineData("-1234")]
+        // [InlineData("1111111111111111111111")] // SQLite's result in this case is undefined
+        public void TestBlobValue(string value)
         {
-            string[] tests =
-                {
-                    "",
-                    "  1234.56",
-                    " 1234.abasd",
-                    "abacdd\u10FFFF",
-                    "2147483647", // Max int
-                    "-2147483648", // Min int
-                    "9223372036854775807", // Max Long
-                    "-9223372036854775808", // Min Long
-                    "9923372036854775809", // Greater than max long
-                    "-9923372036854775809", // Less than min long
-                    "3147483648", // Long
-                    "-1234",
-                    // "1111111111111111111111" SQLite's result in this case is undefined
-                };
-
             using (var db = SQLite3.OpenInMemory())
             {
-                foreach (var test in tests.Select(test => Encoding.UTF8.GetBytes(test)))
+                var test = Encoding.UTF8.GetBytes(value);
+                db.Execute("CREATE TABLE foo (x blob);");
+                db.Execute("INSERT INTO foo (x) VALUES (?)", test);
+
+                var rows = db.Query("SELECT x FROM foo;");
+                foreach (var row in rows)
                 {
-                    db.Execute("CREATE TABLE foo (x blob);");
-                    db.Execute("INSERT INTO foo (x) VALUES (?)", test);
-
-                    var rows = db.Query("SELECT x FROM foo;");
-                    foreach (var row in rows)
-                    {
-                        compare(row.Single(), test.ToSQLiteValue());
-                    }
-
-                    db.Execute("DROP TABLE foo;");
+                    compare(row.Single(), test.ToSQLiteValue());
                 }
+
+                db.Execute("DROP TABLE foo;");
             }
         }
 
@@ -240,41 +231,70 @@ namespace SQLitePCL.pretty.Tests
             }
         }
 
-        [Fact]
-        public void TestStringValue()
+        [Theory]
+        [InlineData("")]
+        [InlineData("  1234.56")]
+        [InlineData("  1234,56")]
+        [InlineData("  1.234,56")]
+        [InlineData(" 1234.abasd")]
+        [InlineData("abacdd\u10FFFF")]
+        [InlineData("2147483647")] // Max int
+        [InlineData("-2147483648")] // Min int
+        [InlineData("9223372036854775807")] // Max Long
+        [InlineData("-9223372036854775808")] // Min Long
+        [InlineData("9923372036854775809")] // Greater than max long
+        [InlineData("-9923372036854775809")] // Less than min long
+        [InlineData("3147483648")] // Long
+        [InlineData("-1234")]
+        // [InlineData("1111111111111111111111")] // SQLite's result in this case is undefined
+        public void TestStringValue(string value)
         {
-            string[] tests =
+            using (var db = SQLite3.OpenInMemory())
+            {
+                db.Execute("CREATE TABLE foo (x text);");
+                db.Execute("INSERT INTO foo (x) VALUES (?)", value);
+
+                var rows = db.Query("SELECT x FROM foo;");
+                foreach (var row in rows)
                 {
-                    "  1234.56",
-                    " 1234.abasd",
-                    "abacdd\u10FFFF",
-                    "2147483647", // Max int
-                    "-2147483648", // Min int
-                    "9223372036854775807", // Max Long
-                    "-9223372036854775808", // Min Long
-                    "9923372036854775809", // Greater than max long
-                    "-9923372036854775809", // Less than min long
-                    "3147483648", // Long
-                    "-1234",
-                    // "1111111111111111111111" SQLite's result in this case is undefined
-                };
+                    compare(row.Single(), value.ToSQLiteValue());
+                }
+
+                db.Execute("DROP TABLE foo;");
+            }
+        }
+
+        [Theory]
+        [InlineData("  1234.56")]
+        [InlineData("  1234,56")]
+        [InlineData("  1.234,56")]
+        public void TestStringValue_CommaDecimalSeparator(string value)
+        {
+            var prev = CultureInfo.CurrentCulture;
+            CultureInfo.CurrentCulture = new CultureInfo(CultureInfo.CurrentCulture.Name)
+            {
+                NumberFormat =
+                {
+                    NumberDecimalSeparator = ",",
+                    NumberGroupSeparator = "."
+                }
+            };
 
             using (var db = SQLite3.OpenInMemory())
             {
-                foreach (var test in tests)
+                db.Execute("CREATE TABLE foo (x text);");
+                db.Execute("INSERT INTO foo (x) VALUES (?)", value);
+
+                var rows = db.Query("SELECT x FROM foo;");
+                foreach (var row in rows)
                 {
-                    db.Execute("CREATE TABLE foo (x text);");
-                    db.Execute("INSERT INTO foo (x) VALUES (?)", test);
-
-                    var rows = db.Query("SELECT x FROM foo;");
-                    foreach (var row in rows)
-                    {
-                        compare(row.Single(), test.ToSQLiteValue());
-                    }
-
-                    db.Execute("DROP TABLE foo;");
+                    compare(row.Single(), value.ToSQLiteValue());
                 }
+
+                db.Execute("DROP TABLE foo;");
             }
+
+            CultureInfo.CurrentCulture = prev;
         }
 
         [Fact]
