@@ -42,7 +42,7 @@ namespace SQLitePCL.pretty
         {
             get { return value; }
 
-            set 
+            set
             {
                 lock (gate)
                 {
@@ -261,7 +261,7 @@ namespace SQLitePCL.pretty
                 this IAsyncDatabaseConnection This,
                 ColumnInfo columnInfo,
                 long rowId,
-                bool canWrite = false) => 
+                bool canWrite = false) =>
             This.OpenBlobAsync(columnInfo, rowId, canWrite, CancellationToken.None);
 
         /// <summary>
@@ -345,7 +345,7 @@ namespace SQLitePCL.pretty
         /// <param name="sql">The SQL statement to compile and Query.</param>
         /// <param name="values">The bind parameter values.</param>
         /// <returns>A cold observable of rows in the result set.</returns>
-        public static IObservable<IReadOnlyList<IResultSetValue>> Query(
+        public static IObservable<IReadOnlyList<ResultSetValue>> Query(
             this IAsyncDatabaseConnection This,
             string sql,
             params object[] values)
@@ -364,7 +364,7 @@ namespace SQLitePCL.pretty
         /// <param name="This">The asynchronous database connection.</param>
         /// <param name="sql">The SQL statement to compile and Query.</param>
         /// <returns>A cold observable of rows in the result set.</returns>
-        public static IObservable<IReadOnlyList<IResultSetValue>> Query(
+        public static IObservable<IReadOnlyList<ResultSetValue>> Query(
             this IAsyncDatabaseConnection This,
             string sql)
         {
@@ -499,7 +499,7 @@ namespace SQLitePCL.pretty
             // AsyncStatementImpl's and AsyncBlobStream's and dispose them here first.
             // Othewise those objects won't have their state correctly set to disposed,
             // leading to some user errors.
-            // Two possible solutions: 
+            // Two possible solutions:
             // * Track the open AsyncStatementImpl's and AsyncBlobStream's
             // * Add a disposing event, and listen to it from AsyncStatementImpl's and AsyncBlobStream's.
             this.conn.Dispose();
@@ -559,7 +559,7 @@ namespace SQLitePCL.pretty
                         {
                             this.progressHandlerResult.Value = false;
                             var ctSubscription = ct.Register(() => this.progressHandlerResult.Value = true);
-                                
+
                             try
                             {
                                 ct.ThrowIfCancellationRequested();

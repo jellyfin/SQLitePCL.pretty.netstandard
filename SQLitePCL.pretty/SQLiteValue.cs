@@ -207,11 +207,11 @@ namespace SQLitePCL.pretty
             return This.ToString().ToSQLiteValue();
         }
 
-        internal static ISQLiteValue ToSQLiteValue(this sqlite3_value This) =>
+        internal static NativeValue ToSQLiteValue(this sqlite3_value This) =>
             new NativeValue(This);
 
-        internal static IResultSetValue ResultSetValueAt(this StatementImpl This, int index) =>
-            new ResultSetValueImpl(This, index);
+        internal static ResultSetValue ResultSetValueAt(this StatementImpl This, int index) =>
+            new ResultSetValue(This, index);
 
         internal static void SetResult(this sqlite3_context ctx, ISQLiteValue value)
         {
@@ -352,8 +352,12 @@ namespace SQLitePCL.pretty
         {
             Contract.Requires(This != null);
 
-            var text = This.ToString();
-            return new Guid(text);
+            if (!Utf8Parser.TryParse(This.ToBlob(), out Guid value, out _))
+            {
+                ThrowHelper.ThrowFormatException();
+            }
+
+            return value;
         }
 
         /// <summary>
@@ -368,7 +372,7 @@ namespace SQLitePCL.pretty
         }
     }
 
-    internal struct NativeValue : ISQLiteValue
+    internal readonly struct NativeValue : ISQLiteValue
     {
         private readonly sqlite3_value value;
 
@@ -401,7 +405,7 @@ namespace SQLitePCL.pretty
 
     // Type coercion rules
     // http://www.sqlite.org/capi3ref.html#sqlite3_column_blob
-    internal struct NullValue : ISQLiteValue
+    internal readonly struct NullValue : ISQLiteValue
     {
         public SQLiteType SQLiteType => SQLiteType.Null;
 
@@ -418,7 +422,7 @@ namespace SQLitePCL.pretty
         public override string ToString() => string.Empty;
     }
 
-    internal struct IntValue : ISQLiteValue
+    internal readonly struct IntValue : ISQLiteValue
     {
         private readonly long value;
 
@@ -452,7 +456,7 @@ namespace SQLitePCL.pretty
         public override string ToString() => value.ToString();
     }
 
-    internal struct FloatValue : ISQLiteValue
+    internal readonly struct FloatValue : ISQLiteValue
     {
         private readonly double value;
 
@@ -502,7 +506,7 @@ namespace SQLitePCL.pretty
         public override string ToString() => throw new NotSupportedException();
     }
 
-    internal struct StringValue : ISQLiteValue
+    internal readonly struct StringValue : ISQLiteValue
     {
         private static readonly Regex isNegative = new Regex("^[ ]*[-]");
         private static readonly Regex stringToDoubleCast = new Regex("^[ ]*([-]?)[0-9]+([.][0-9]+)?");
@@ -576,7 +580,7 @@ namespace SQLitePCL.pretty
         public override string ToString() => value;
     }
 
-    internal struct BlobValue : ISQLiteValue
+    internal readonly struct BlobValue : ISQLiteValue
     {
         private readonly byte[] value;
 
@@ -605,43 +609,54 @@ namespace SQLitePCL.pretty
             Encoding.UTF8.GetString(value);
     }
 
-    internal struct ResultSetValueImpl : IResultSetValue
+    /// <summary>
+    /// An <see cref="ISQLiteValue"/> that includes <see cref="ColumnInfo"/> about the value.
+    /// </summary>
+    public readonly struct ResultSetValue : ISQLiteValue
     {
         private readonly StatementImpl stmt;
         private readonly int index;
 
-        internal ResultSetValueImpl(StatementImpl stmt, int index)
+        internal ResultSetValue(StatementImpl stmt, int index)
         {
             this.stmt = stmt;
             this.index = index;
         }
 
+        /// <inheritdoc />
         public ColumnInfo ColumnInfo =>
             ColumnInfo.Create(stmt, index);
 
+        /// <inheritdoc />
         public SQLiteType SQLiteType =>
             (SQLiteType)raw.sqlite3_column_type(stmt.sqlite3_stmt, index);
 
+        /// <inheritdoc />
         public int Length =>
             raw.sqlite3_column_bytes(stmt.sqlite3_stmt, index);
 
+        /// <inheritdoc />
         public ReadOnlySpan<byte> ToBlob() =>
             raw.sqlite3_column_blob(stmt.sqlite3_stmt, index);
 
+        /// <inheritdoc />
         public double ToDouble() =>
             raw.sqlite3_column_double(stmt.sqlite3_stmt, index);
 
+        /// <inheritdoc />
         public int ToInt() =>
             raw.sqlite3_column_int(stmt.sqlite3_stmt, index);
 
+        /// <inheritdoc />
         public long ToInt64() =>
             raw.sqlite3_column_int64(stmt.sqlite3_stmt, index);
 
+        /// <inheritdoc />
         public override string ToString() =>
             raw.sqlite3_column_text(stmt.sqlite3_stmt, index).utf8_to_string() ?? string.Empty;
     }
 
-    internal struct ZeroBlob : ISQLiteValue
+    internal readonly struct ZeroBlob : ISQLiteValue
     {
         private readonly int length;
 

@@ -9,8 +9,8 @@ using System.Runtime.CompilerServices;
 namespace SQLitePCL.pretty.Orm
 {
     public static partial class DatabaseConnection
-    { 
-        private static readonly ConditionalWeakTable<TableMapping, string> deleteQueries = 
+    {
+        private static readonly ConditionalWeakTable<TableMapping, string> deleteQueries =
             new ConditionalWeakTable<TableMapping, string>();
 
         /// <summary>
@@ -22,20 +22,20 @@ namespace SQLitePCL.pretty.Orm
         public static IStatement PrepareDeleteStatement<T>(this IDatabaseConnection This)
         {
             var tableMapping = TableMapping.Get<T>();
-            var sql = deleteQueries.GetValue(tableMapping, mapping => 
+            var sql = deleteQueries.GetValue(tableMapping, mapping =>
                 {
                     var primaryKeyColumn = mapping.PrimaryKeyColumn();
                     return SQLBuilder.DeleteUsingPrimaryKey(mapping.TableName, primaryKeyColumn);
                 });
 
-           
+
             return This.PrepareStatement(sql);
         }
 
         private static IEnumerable<KeyValuePair<long,T>> YieldDeleteAll<T>(
-            this IDatabaseConnection This, 
-            IEnumerable<long> primaryKeys, 
-            Func<IReadOnlyList<IResultSetValue>,T> resultSelector)
+            this IDatabaseConnection This,
+            IEnumerable<long> primaryKeys,
+            Func<IReadOnlyList<ResultSetValue>,T> resultSelector)
         {
             Contract.Requires(This != null);
             Contract.Requires(resultSelector != null);
@@ -62,14 +62,14 @@ namespace SQLitePCL.pretty.Orm
         /// <param name="This">The database connection.</param>
         /// <param name="primaryKey">A primary key.</param>
         /// <param name="deleted">If found in the database, the deleted object.</param>
-        /// <param name="resultSelector">A transform function to apply to each row.</param> 
+        /// <param name="resultSelector">A transform function to apply to each row.</param>
         /// <typeparam name="T">The mapped type.</typeparam>
         public static bool TryDelete<T>(
-            this IDatabaseConnection This, 
-            long primaryKey, 
-            Func<IReadOnlyList<IResultSetValue>,T> resultSelector, 
+            this IDatabaseConnection This,
+            long primaryKey,
+            Func<IReadOnlyList<ResultSetValue>,T> resultSelector,
             out T deleted)
-        {           
+        {
             var result = This.YieldDeleteAll(new long[] { primaryKey }, resultSelector).FirstOrDefault();
             if (result.Value != null)
             {
@@ -89,17 +89,17 @@ namespace SQLitePCL.pretty.Orm
         /// <returns>A dictionary mapping the primary key to its value if found in the database.</returns>
         /// <param name="This">The database connection.</param>
         /// <param name="primaryKeys">An IEnumerable of primary keys to delete.</param>
-        /// <param name="resultSelector">A transform function to apply to each row.</param> 
-        /// <typeparam name="T">The mapped type.</typeparam>       
+        /// <param name="resultSelector">A transform function to apply to each row.</param>
+        /// <typeparam name="T">The mapped type.</typeparam>
         public static IReadOnlyDictionary<long,T> DeleteAll<T>(
-            this IDatabaseConnection This,  
+            this IDatabaseConnection This,
             IEnumerable<long> primaryKeys,
-            Func<IReadOnlyList<IResultSetValue>,T> resultSelector)
+            Func<IReadOnlyList<ResultSetValue>,T> resultSelector)
         {
             Contract.Requires(primaryKeys != null);
             Contract.Requires(resultSelector != null);
 
-            return This.RunInTransaction(db => 
+            return This.RunInTransaction(db =>
                        db.YieldDeleteAll(primaryKeys, resultSelector)
                             .Where(kvp => kvp.Value != null)
                             .ToDictionary(kvp => kvp.Key, kvp => kvp.Value));
@@ -131,20 +131,20 @@ namespace SQLitePCL.pretty.Orm
     }
 
     public static partial class AsyncDatabaseConnection
-    { 
+    {
         /// <summary>
         /// Deletes all object instances specified by their primary keys.
         /// </summary>
         /// <returns>A task that completes with a dictionary mapping the primary key to its value if found in the database.</returns>
         /// <param name="This">The database connection.</param>
         /// <param name="primaryKeys">An IEnumerable of primary keys to delete.</param>
-        /// <param name="resultSelector">A transform function to apply to each row.</param> 
+        /// <param name="resultSelector">A transform function to apply to each row.</param>
         /// <param name="ct">A cancellation token that can be used to cancel the operation.</param>
         /// <typeparam name="T">The mapped type.</typeparam>
         public static Task<IReadOnlyDictionary<long,T>> DeleteAllAsync<T>(
-            this IAsyncDatabaseConnection This, 
-            IEnumerable<long> primaryKeys, 
-            Func<IReadOnlyList<IResultSetValue>,T> resultSelector,
+            this IAsyncDatabaseConnection This,
+            IEnumerable<long> primaryKeys,
+            Func<IReadOnlyList<ResultSetValue>,T> resultSelector,
             CancellationToken ct)
         {
             Contract.Requires(primaryKeys != null);
@@ -159,12 +159,12 @@ namespace SQLitePCL.pretty.Orm
         /// <returns>A task that completes with a dictionary mapping the primary key to its value if found in the database.</returns>
         /// <param name="This">The database connection.</param>
         /// <param name="primaryKeys">An IEnumerable of primary keys to delete.</param>
-        /// <param name="resultSelector">A transform function to apply to each row.</param> 
+        /// <param name="resultSelector">A transform function to apply to each row.</param>
         /// <typeparam name="T">The mapped type.</typeparam>
         public static Task<IReadOnlyDictionary<long,T>> DeleteAllAsync<T>(
-                this IAsyncDatabaseConnection This, 
+                this IAsyncDatabaseConnection This,
                 IEnumerable<long> primaryKeys,
-                Func<IReadOnlyList<IResultSetValue>,T> resultSelector) =>
+                Func<IReadOnlyList<ResultSetValue>,T> resultSelector) =>
             This.DeleteAllAsync(primaryKeys, resultSelector, CancellationToken.None);
 
         /// <summary>

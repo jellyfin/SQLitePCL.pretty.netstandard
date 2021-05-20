@@ -16,7 +16,7 @@ namespace SQLitePCL.pretty.Orm
         /// </summary>
         /// <returns>The result selector function.</returns>
         /// <typeparam name="T">The mapped type.</typeparam>
-        public static Func<IReadOnlyList<IResultSetValue>,T> RowToObject<T>()
+        public static Func<IReadOnlyList<ResultSetValue>,T> RowToObject<T>()
         {
             Func<T> builder = () => Activator.CreateInstance<T>();
             Func<T, T> build = obj => obj;
@@ -25,7 +25,7 @@ namespace SQLitePCL.pretty.Orm
         }
 
         /// <summary>
-        /// Returns a function that convert a SQLite row into an instance of type T using the provided builder functions. The builder 
+        /// Returns a function that convert a SQLite row into an instance of type T using the provided builder functions. The builder
         /// function may return the same instane of builder more than once, provided that the instance is thread local or locked such
         /// that only a single given thread ever has access to the instance between calls to builder and build.
         /// </summary>
@@ -34,8 +34,8 @@ namespace SQLitePCL.pretty.Orm
         /// <param name="build">A function that builds and instance of T using the builder.</param>
         /// <typeparam name="TBuilder">The builder type.</typeparam>
         /// <typeparam name="T">The mapped type.</typeparam>
-        public static Func<IReadOnlyList<IResultSetValue>,T> RowToObject<TBuilder, T>(Func<TBuilder> builder, Func<TBuilder,T> build)
-        {   
+        public static Func<IReadOnlyList<ResultSetValue>,T> RowToObject<TBuilder, T>(Func<TBuilder> builder, Func<TBuilder,T> build)
+        {
             Contract.Requires(builder != null);
             Contract.Requires(build != null);
 
@@ -52,7 +52,7 @@ namespace SQLitePCL.pretty.Orm
                 columns.Add(columnName, prop);
             }
 
-            return (IReadOnlyList<IResultSetValue> row) =>
+            return (IReadOnlyList<ResultSetValue> row) =>
                 {
                     var builderInst = builder();
 
@@ -76,27 +76,27 @@ namespace SQLitePCL.pretty.Orm
             // Just in case the clrType is nullable
             clrType = clrType.GetUnderlyingType();
 
-            if (value.SQLiteType == SQLiteType.Null)    { return null; } 
-            else if (clrType == typeof(String))         { return value.ToString(); } 
-            else if (clrType == typeof(Int32))          { return value.ToInt(); } 
-            else if (clrType == typeof(Boolean))        { return value.ToBool(); } 
-            else if (clrType == typeof(double))         { return value.ToDouble(); } 
-            else if (clrType == typeof(float))          { return value.ToFloat(); } 
-            else if (clrType == typeof(TimeSpan))       { return value.ToTimeSpan(); } 
-            else if (clrType == typeof(DateTime))       { return value.ToDateTime(); } 
+            if (value.SQLiteType == SQLiteType.Null)    { return null; }
+            else if (clrType == typeof(String))         { return value.ToString(); }
+            else if (clrType == typeof(Int32))          { return value.ToInt(); }
+            else if (clrType == typeof(Boolean))        { return value.ToBool(); }
+            else if (clrType == typeof(double))         { return value.ToDouble(); }
+            else if (clrType == typeof(float))          { return value.ToFloat(); }
+            else if (clrType == typeof(TimeSpan))       { return value.ToTimeSpan(); }
+            else if (clrType == typeof(DateTime))       { return value.ToDateTime(); }
             else if (clrType == typeof(DateTimeOffset)) { return value.ToDateTimeOffset(); }
-            else if (clrType.GetTypeInfo().IsEnum)      { return value.ToInt(); } 
-            else if (clrType == typeof(Int64))          { return value.ToInt64(); } 
-            else if (clrType == typeof(UInt32))         { return value.ToUInt32(); } 
-            else if (clrType == typeof(decimal))        { return value.ToDecimal(); } 
-            else if (clrType == typeof(Byte))           { return value.ToByte(); } 
-            else if (clrType == typeof(UInt16))         { return value.ToUInt16(); } 
-            else if (clrType == typeof(Int16))          { return value.ToShort(); } 
-            else if (clrType == typeof(sbyte))          { return value.ToSByte(); } 
-            else if (clrType == typeof(byte[]))         { return value.ToBlob(); } 
-            else if (clrType == typeof(Guid))           { return value.ToGuid(); } 
-            else if (clrType == typeof(Uri))            { return value.ToUri(); } 
-            else 
+            else if (clrType.GetTypeInfo().IsEnum)      { return value.ToInt(); }
+            else if (clrType == typeof(Int64))          { return value.ToInt64(); }
+            else if (clrType == typeof(UInt32))         { return value.ToUInt32(); }
+            else if (clrType == typeof(decimal))        { return value.ToDecimal(); }
+            else if (clrType == typeof(Byte))           { return value.ToByte(); }
+            else if (clrType == typeof(UInt16))         { return value.ToUInt16(); }
+            else if (clrType == typeof(Int16))          { return value.ToShort(); }
+            else if (clrType == typeof(sbyte))          { return value.ToSByte(); }
+            else if (clrType == typeof(byte[]))         { return value.ToBlob(); }
+            else if (clrType == typeof(Guid))           { return value.ToGuid(); }
+            else if (clrType == typeof(Uri))            { return value.ToUri(); }
+            else
             {
                 throw new NotSupportedException ($"Don't know how to read {clrType}");
             }

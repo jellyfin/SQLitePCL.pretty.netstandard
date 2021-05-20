@@ -105,7 +105,7 @@ namespace SQLitePCL.pretty
         private readonly EventHandler dbDisposing;
         private readonly IReadOnlyOrderedDictionary<string, IBindParameter> bindParameters;
         private readonly IReadOnlyList<ColumnInfo> columns;
-        private readonly IReadOnlyList<IResultSetValue> current;
+        private readonly IReadOnlyList<ResultSetValue> current;
 
         private bool disposed = false;
         private bool mustReset = false;
@@ -153,7 +153,7 @@ namespace SQLitePCL.pretty
             }
         }
 
-        public IReadOnlyList<IResultSetValue> Current
+        public IReadOnlyList<ResultSetValue> Current
         {
             get
             {
@@ -449,7 +449,7 @@ namespace SQLitePCL.pretty
             this.GetEnumerator();
     }
 
-    internal sealed class ResultSetImpl : IReadOnlyList<IResultSetValue>
+    internal sealed class ResultSetImpl : IReadOnlyList<ResultSetValue>
     {
         private readonly StatementImpl stmt;
 
@@ -461,7 +461,7 @@ namespace SQLitePCL.pretty
         public int Count =>
             raw.sqlite3_data_count(stmt.sqlite3_stmt);
 
-        public IEnumerator<IResultSetValue> GetEnumerator()
+        public IEnumerator<ResultSetValue> GetEnumerator()
         {
             for (int i = 0; i < this.Count; i++)
             {
@@ -472,7 +472,7 @@ namespace SQLitePCL.pretty
         IEnumerator IEnumerable.GetEnumerator() =>
             this.GetEnumerator();
 
-        public IResultSetValue this[int index]
+        public ResultSetValue this[int index]
         {
             get
             {
