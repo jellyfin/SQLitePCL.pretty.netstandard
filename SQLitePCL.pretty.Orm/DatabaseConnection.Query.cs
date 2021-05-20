@@ -26,7 +26,7 @@ namespace SQLitePCL.pretty.Orm
         /// <param name="This">The database connection.</param>
         /// <param name="query">The SQL statement to compile and Query.</param>
         /// <returns>An <see cref="IEnumerable&lt;T&gt;"/> of rows in the result set.</returns>
-        public static IEnumerable<IReadOnlyList<IResultSetValue>> Query(this IDatabaseConnection This, ISqlQuery query)
+        public static IEnumerable<IReadOnlyList<ResultSetValue>> Query(this IDatabaseConnection This, ISqlQuery query)
         {
             Contract.Requires(This != null);
             Contract.Requires(query != null);
@@ -41,7 +41,7 @@ namespace SQLitePCL.pretty.Orm
         /// <param name="query">The SQL statement to compile and Query.</param>
         /// <param name="values">The bind parameter values.</param>
         /// <returns>An <see cref="IEnumerable&lt;T&gt;"/> of rows in the result set.</returns>
-        public static IEnumerable<IReadOnlyList<IResultSetValue>> Query(
+        public static IEnumerable<IReadOnlyList<ResultSetValue>> Query(
             this IDatabaseConnection This, ISqlQuery query, params object[] values)
         {
             Contract.Requires(This != null);
@@ -60,7 +60,7 @@ namespace SQLitePCL.pretty.Orm
         /// <param name="This">The asynchronous database connection.</param>
         /// <param name="query">The SQL query to compile and Query.</param>
         /// <returns>A cold observable of rows in the result set.</returns>
-        public static IObservable<IReadOnlyList<IResultSetValue>> Query(this IAsyncDatabaseConnection This, ISqlQuery query)
+        public static IObservable<IReadOnlyList<ResultSetValue>> Query(this IAsyncDatabaseConnection This, ISqlQuery query)
         {
             Contract.Requires(This != null);
             Contract.Requires(query != null);
@@ -76,7 +76,7 @@ namespace SQLitePCL.pretty.Orm
         /// <param name="query">The SQL query to compile and Query.</param>
         /// <param name="values">The bind parameter values.</param>
         /// <returns>A cold observable of rows in the result set.</returns>
-        public static IObservable<IReadOnlyList<IResultSetValue>> Query(
+        public static IObservable<IReadOnlyList<ResultSetValue>> Query(
             this IAsyncDatabaseConnection This, ISqlQuery query, params object[] values)
         {
             Contract.Requires(This != null);

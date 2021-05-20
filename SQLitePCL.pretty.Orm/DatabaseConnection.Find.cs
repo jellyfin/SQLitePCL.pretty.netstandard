@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 namespace SQLitePCL.pretty.Orm
 {
     public static partial class DatabaseConnection
-    { 
-        private static readonly ConditionalWeakTable<TableMapping, string> findQueries = 
+    {
+        private static readonly ConditionalWeakTable<TableMapping, string> findQueries =
             new ConditionalWeakTable<TableMapping, string>();
 
         /// <summary>
@@ -23,19 +23,19 @@ namespace SQLitePCL.pretty.Orm
             Contract.Requires(This != null);
 
             var tableMapping = TableMapping.Get<T>();
-            var sql = findQueries.GetValue(tableMapping, mapping => 
+            var sql = findQueries.GetValue(tableMapping, mapping =>
                 {
                     var column = mapping.PrimaryKeyColumn();
                     return SQLBuilder.SelectWhereColumnEquals(tableMapping.TableName, column);
                 });
 
-            return This.PrepareStatement(sql);   
+            return This.PrepareStatement(sql);
         }
 
         private static IEnumerable<KeyValuePair<long,T>> YieldFindAll<T>(
-            this IDatabaseConnection This,  
+            this IDatabaseConnection This,
             IEnumerable<long> primaryKeys,
-            Func<IReadOnlyList<IResultSetValue>,T> resultSelector)
+            Func<IReadOnlyList<ResultSetValue>,T> resultSelector)
         {
             using (var findStmt = This.PrepareFindStatement<T>())
             {
@@ -54,12 +54,12 @@ namespace SQLitePCL.pretty.Orm
         /// <param name="This">The database connection.</param>
         /// <param name="primaryKey">A primary key.</param>
         /// <param name="value">If found in the database, the found object.</param>
-        /// <param name="resultSelector">A transform function to apply to each row.</param> 
+        /// <param name="resultSelector">A transform function to apply to each row.</param>
         /// <typeparam name="T">The mapped type.</typeparam>
         public static bool TryFind<T>(
-            this IDatabaseConnection This, 
-            long primaryKey, 
-            Func<IReadOnlyList<IResultSetValue>,T> resultSelector,
+            this IDatabaseConnection This,
+            long primaryKey,
+            Func<IReadOnlyList<ResultSetValue>,T> resultSelector,
             out T value)
         {
             Contract.Requires(This != null);
@@ -83,12 +83,12 @@ namespace SQLitePCL.pretty.Orm
         /// <returns>A dictionary mapping the primary key to its value if found in the database.</returns>
         /// <param name="This">The database connection.</param>
         /// <param name="primaryKeys">An IEnumerable of primary keys to find.</param>
-        /// <param name="resultSelector">A transform function to apply to each row.</param> 
+        /// <param name="resultSelector">A transform function to apply to each row.</param>
         /// <typeparam name="T">The mapped type.</typeparam>
         public static IReadOnlyDictionary<long,T> FindAll<T>(
-            this IDatabaseConnection This, 
+            this IDatabaseConnection This,
             IEnumerable<long> primaryKeys,
-            Func<IReadOnlyList<IResultSetValue>,T> resultSelector)
+            Func<IReadOnlyList<ResultSetValue>,T> resultSelector)
         {
             Contract.Requires(This != null);
             Contract.Requires(primaryKeys != null);
@@ -111,13 +111,13 @@ namespace SQLitePCL.pretty.Orm
         /// <returns>A task that completes with a dictionary mapping the primary key to its value if found in the database.</returns>
         /// <param name="This">The database connection.</param>
         /// <param name="primaryKeys">An IEnumerable of primary keys to find.</param>
-        /// <param name="resultSelector">A transform function to apply to each row.</param> 
+        /// <param name="resultSelector">A transform function to apply to each row.</param>
         /// <param name="ct">A cancellation token that can be used to cancel the operation</param>
         /// <typeparam name="T">The mapped type.</typeparam>
         public static Task<IReadOnlyDictionary<long,T>> FindAllAsync<T>(
-            this IAsyncDatabaseConnection This, 
-            IEnumerable<long> primaryKeys, 
-            Func<IReadOnlyList<IResultSetValue>,T> resultSelector,
+            this IAsyncDatabaseConnection This,
+            IEnumerable<long> primaryKeys,
+            Func<IReadOnlyList<ResultSetValue>,T> resultSelector,
             CancellationToken ct)
         {
             Contract.Requires(This != null);
@@ -133,12 +133,12 @@ namespace SQLitePCL.pretty.Orm
         /// <returns>A task that completes with a dictionary mapping the primary key to its value if found in the database.</returns>
         /// <param name="This">The database connection.</param>
         /// <param name="primaryKeys">An IEnumerable of primary keys to find.</param>
-        /// <param name="resultSelector">A transform function to apply to each row.</param> 
+        /// <param name="resultSelector">A transform function to apply to each row.</param>
         /// <typeparam name="T">The mapped type.</typeparam>
         public static Task<IReadOnlyDictionary<long,T>> FindAllAsync<T>(
-            this IAsyncDatabaseConnection This, 
+            this IAsyncDatabaseConnection This,
             IEnumerable<long> primaryKeys,
-            Func<IReadOnlyList<IResultSetValue>,T> resultSelector)
+            Func<IReadOnlyList<ResultSetValue>,T> resultSelector)
         {
             Contract.Requires(This != null);
             Contract.Requires(primaryKeys != null);

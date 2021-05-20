@@ -129,7 +129,7 @@ namespace SQLitePCL.pretty
     /// Represents a single SQL statement.
     /// </summary>
     /// <seealso href="https://sqlite.org/c3ref/stmt.html"/>
-    public interface IStatement : IEnumerator<IReadOnlyList<IResultSetValue>>
+    public interface IStatement : IEnumerator<IReadOnlyList<ResultSetValue>>
     {
         /// <summary>
         /// An <see cref="IReadOnlyOrderedDictionary&lt;TKey, TValue&gt;"/> of the statement's bind parameters
@@ -300,17 +300,6 @@ namespace SQLitePCL.pretty
         /// Returns the SQLiteValue as a string. Casting if necessary.
         /// </summary>
         string ToString();
-    }
-
-    /// <summary>
-    /// An <see cref="ISQLiteValue"/> that includes <see cref="ColumnInfo"/> about the value.
-    /// </summary>
-    public interface IResultSetValue : ISQLiteValue
-    {
-        /// <summary>
-        /// The value's column info.
-        /// </summary>
-        ColumnInfo ColumnInfo { get; }
     }
 
     /// <summary>

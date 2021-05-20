@@ -40,7 +40,7 @@ namespace SQLitePCL.pretty.Tests
                 Assert.Equal(1, stmt.Current[0].ToInt());
 
                 var ienumCurrent = ((IEnumerator)stmt).Current;
-                var ienumResultSet = (IReadOnlyList<IResultSetValue>) ienumCurrent;
+                var ienumResultSet = (IReadOnlyList<ResultSetValue>) ienumCurrent;
                 Assert.Equal(1, ienumResultSet[0].ToInt());
             }
         }

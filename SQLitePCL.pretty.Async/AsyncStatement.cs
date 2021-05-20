@@ -134,16 +134,16 @@ namespace SQLitePCL.pretty
         /// <param name="This">The async statement.</param>
         /// <param name="values">The position indexed values to bind.</param>
         /// <returns>A cold IObservable of the rows in the result set.</returns>
-        public static IObservable<IReadOnlyList<IResultSetValue>> Query(this IAsyncStatement This, params object[] values) =>
-            This.Use<IReadOnlyList<IResultSetValue>>(stmt => stmt.Query(values));
+        public static IObservable<IReadOnlyList<ResultSetValue>> Query(this IAsyncStatement This, params object[] values) =>
+            This.Use<IReadOnlyList<ResultSetValue>>(stmt => stmt.Query(values));
 
         /// <summary>
         /// Queries the database asynchronously using the provided IStatement
         /// </summary>
         /// <param name="This">The async statement.</param>
         /// <returns>A cold IObservable of the rows in the result set.</returns>
-        public static IObservable<IReadOnlyList<IResultSetValue>> Query(this IAsyncStatement This) =>
-            This.Use<IReadOnlyList<IResultSetValue>>(stmt => stmt.Query());
+        public static IObservable<IReadOnlyList<ResultSetValue>> Query(this IAsyncStatement This) =>
+            This.Use<IReadOnlyList<ResultSetValue>>(stmt => stmt.Query());
     }
 
     internal class AsyncStatementImpl : IAsyncStatement
@@ -273,7 +273,7 @@ namespace SQLitePCL.pretty
                 stmt.ClearBindings();
             }
 
-            public IReadOnlyList<IResultSetValue> Current
+            public IReadOnlyList<ResultSetValue> Current
             {
                 get
                 {

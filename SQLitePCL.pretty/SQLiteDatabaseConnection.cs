@@ -1261,14 +1261,20 @@ namespace SQLitePCL.pretty
 
         private void Dispose(bool disposing)
         {
-            if (disposed) { return; }
+            if (disposed)
+            {
+                return;
+            }
 
-            this.Disposing?.Invoke(this, null);
-
-            disposed = true;
+            if (disposing)
+            {
+                this.Disposing?.Invoke(this, null);
+            }
 
             //FIXME: Handle errors?
             raw.sqlite3_close(db);
+
+            disposed = true;
         }
 
         /// <inheritdoc/>

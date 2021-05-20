@@ -221,13 +221,13 @@ namespace SQLitePCL.pretty
         /// <param name="This">The database connection.</param>
         /// <param name="sql">The SQL statement to compile and Query.</param>
         /// <returns>An <see cref="IEnumerable&lt;T&gt;"/> of rows in the result set.</returns>
-        public static IEnumerable<IReadOnlyList<IResultSetValue>> Query(
+        public static IEnumerable<IReadOnlyList<ResultSetValue>> Query(
             this IDatabaseConnection This, string sql)
         {
             Contract.Requires(This != null);
             Contract.Requires(sql != null);
 
-            return new DelegatingEnumerable<IReadOnlyList<IResultSetValue>>(() =>
+            return new DelegatingEnumerable<IReadOnlyList<ResultSetValue>>(() =>
                 {
                     return This.PrepareStatement(sql);
                 });
@@ -241,14 +241,14 @@ namespace SQLitePCL.pretty
         /// <param name="sql">The SQL statement to compile and Query.</param>
         /// <param name="values">The bind parameter values.</param>
         /// <returns>An <see cref="IEnumerable&lt;T&gt;"/> of rows in the result set.</returns>
-        public static IEnumerable<IReadOnlyList<IResultSetValue>> Query(
+        public static IEnumerable<IReadOnlyList<ResultSetValue>> Query(
             this IDatabaseConnection This, string sql, params object[] values)
         {
             Contract.Requires(This != null);
             Contract.Requires(sql != null);
             Contract.Requires(values != null);
 
-            return new DelegatingEnumerable<IReadOnlyList<IResultSetValue>>(() =>
+            return new DelegatingEnumerable<IReadOnlyList<ResultSetValue>>(() =>
                 {
                     var stmt = This.PrepareStatement(sql);
                     stmt.Bind(values);

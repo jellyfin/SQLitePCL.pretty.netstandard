@@ -33,7 +33,7 @@ namespace SQLitePCL.pretty
         /// </summary>
         /// <returns>An IObservable of the scalar values.</returns>
         /// <param name="This">An observable of result set rows.</param>
-        public static IObservable<IResultSetValue> SelectScalar(this IObservable<IReadOnlyList<IResultSetValue>> This) => 
+        public static IObservable<ResultSetValue> SelectScalar(this IObservable<IReadOnlyList<ResultSetValue>> This) =>
             This.Select(x => x.First());
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace SQLitePCL.pretty
         /// </summary>
         /// <returns>An IObservable of the scalar values.</returns>
         /// <param name="This">An observable of result set rows.</param>
-        public static IObservable<int> SelectScalarInt(this IObservable<IReadOnlyList<IResultSetValue>> This) =>
+        public static IObservable<int> SelectScalarInt(this IObservable<IReadOnlyList<ResultSetValue>> This) =>
             This.SelectScalar().Select(x => x.ToInt());
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace SQLitePCL.pretty
         /// </summary>
         /// <returns>An IObservable of the scalar values.</returns>
         /// <param name="This">An observable of result set rows.</param>
-        public static IObservable<long> SelectScalarInt64(this IObservable<IReadOnlyList<IResultSetValue>> This) =>
+        public static IObservable<long> SelectScalarInt64(this IObservable<IReadOnlyList<ResultSetValue>> This) =>
             This.SelectScalar().Select(x => x.ToInt64());
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace SQLitePCL.pretty
         /// </summary>
         /// <returns>An IObservable of the scalar values.</returns>
         /// <param name="This">An observable of result set rows.</param>
-        public static IObservable<string> SelectScalarString(this IObservable<IReadOnlyList<IResultSetValue>> This) =>
+        public static IObservable<string> SelectScalarString(this IObservable<IReadOnlyList<ResultSetValue>> This) =>
             This.SelectScalar().Select(x => x.ToString());
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace SQLitePCL.pretty
         /// </summary>
         /// <returns>An IObservable of the scalar values.</returns>
         /// <param name="This">An observable of result set rows.</param>
-        public static IObservable<byte[]> SelectScalarBlob(this IObservable<IReadOnlyList<IResultSetValue>> This) =>
+        public static IObservable<byte[]> SelectScalarBlob(this IObservable<IReadOnlyList<ResultSetValue>> This) =>
             This.SelectScalar().Select(x => x.ToBlob());
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace SQLitePCL.pretty
         /// </summary>
         /// <returns>An IObservable of the scalar values.</returns>
         /// <param name="This">An observable of result set rows.</param>
-        public static IObservable<double> SelectScalarDouble(this IObservable<IReadOnlyList<IResultSetValue>> This) =>
+        public static IObservable<double> SelectScalarDouble(this IObservable<IReadOnlyList<ResultSetValue>> This) =>
             This.SelectScalar().Select(x => x.ToDouble());
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace SQLitePCL.pretty
         /// </summary>
         /// <returns>An IObservable of the scalar values.</returns>
         /// <param name="This">An observable of result set rows.</param>
-        public static IObservable<bool> SelectScalarBool(this IObservable<IReadOnlyList<IResultSetValue>> This) =>
+        public static IObservable<bool> SelectScalarBool(this IObservable<IReadOnlyList<ResultSetValue>> This) =>
             This.SelectScalar().Select(x => x.ToBool());
 
         /// <summary>
@@ -89,7 +89,7 @@ namespace SQLitePCL.pretty
         /// </summary>
         /// <returns>An IObservable of the scalar values.</returns>
         /// <param name="This">An observable of result set rows.</param>
-        public static IObservable<float> SelectScalarFloat(this IObservable<IReadOnlyList<IResultSetValue>> This) => 
+        public static IObservable<float> SelectScalarFloat(this IObservable<IReadOnlyList<ResultSetValue>> This) =>
             This.SelectScalar().Select(x => x.ToFloat());
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace SQLitePCL.pretty
         /// </summary>
         /// <returns>An IObservable of the scalar values.</returns>
         /// <param name="This">An observable of result set rows.</param>
-        public static IObservable<TimeSpan> SelectScalarTimeSpan(this IObservable<IReadOnlyList<IResultSetValue>> This) => 
+        public static IObservable<TimeSpan> SelectScalarTimeSpan(this IObservable<IReadOnlyList<ResultSetValue>> This) =>
             This.SelectScalar().Select(x => x.ToTimeSpan());
 
         /// <summary>
@@ -105,7 +105,7 @@ namespace SQLitePCL.pretty
         /// </summary>
         /// <returns>An IObservable of the scalar values.</returns>
         /// <param name="This">An observable of result set rows.</param>
-        public static IObservable<DateTime> SelectScalarDateTime(this IObservable<IReadOnlyList<IResultSetValue>> This) =>
+        public static IObservable<DateTime> SelectScalarDateTime(this IObservable<IReadOnlyList<ResultSetValue>> This) =>
             This.SelectScalar().Select(x => x.ToDateTime());
 
         /// <summary>
@@ -113,16 +113,16 @@ namespace SQLitePCL.pretty
         /// </summary>
         /// <returns>An IObservable of the scalar values.</returns>
         /// <param name="This">An observable of result set rows.</param>
-        public static IObservable<DateTimeOffset> SelectScalarDateTimeOffset(this IObservable<IReadOnlyList<IResultSetValue>> This) =>
+        public static IObservable<DateTimeOffset> SelectScalarDateTimeOffset(this IObservable<IReadOnlyList<ResultSetValue>> This) =>
             This.SelectScalar().Select(x => x.ToDateTimeOffset());
-       
+
 
         /// <summary>
         /// Selects the value in the first column of the result set row as a <see cref="uint"/>.
         /// </summary>
         /// <returns>An IObservable of the scalar values.</returns>
         /// <param name="This">An observable of result set rows.</param>
-        public static IObservable<uint> SelectScalarUInt32(this IObservable<IReadOnlyList<IResultSetValue>> This) =>
+        public static IObservable<uint> SelectScalarUInt32(this IObservable<IReadOnlyList<ResultSetValue>> This) =>
             This.SelectScalar().Select(x => x.ToUInt32());
 
 
@@ -131,7 +131,7 @@ namespace SQLitePCL.pretty
         /// </summary>
         /// <returns>An IObservable of the scalar values.</returns>
         /// <param name="This">An observable of result set rows.</param>
-        public static IObservable<decimal> SelectScalarDecimal(this IObservable<IReadOnlyList<IResultSetValue>> This) =>
+        public static IObservable<decimal> SelectScalarDecimal(this IObservable<IReadOnlyList<ResultSetValue>> This) =>
             This.SelectScalar().Select(x => x.ToDecimal());
 
         /// <summary>
@@ -139,7 +139,7 @@ namespace SQLitePCL.pretty
         /// </summary>
         /// <returns>An IObservable of the scalar values.</returns>
         /// <param name="This">An observable of result set rows.</param>
-        public static IObservable<byte> SelectScalarByte(this IObservable<IReadOnlyList<IResultSetValue>> This)
+        public static IObservable<byte> SelectScalarByte(this IObservable<IReadOnlyList<ResultSetValue>> This)
             => This.SelectScalar().Select(x => x.ToByte());
 
         /// <summary>
@@ -147,7 +147,7 @@ namespace SQLitePCL.pretty
         /// </summary>
         /// <returns>An IObservable of the scalar values.</returns>
         /// <param name="This">An observable of result set rows.</param>
-        public static IObservable<UInt16> SelectScalarUInt16(this IObservable<IReadOnlyList<IResultSetValue>> This) =>
+        public static IObservable<UInt16> SelectScalarUInt16(this IObservable<IReadOnlyList<ResultSetValue>> This) =>
             This.SelectScalar().Select(x => x.ToUInt16());
 
         /// <summary>
@@ -155,7 +155,7 @@ namespace SQLitePCL.pretty
         /// </summary>
         /// <returns>An IObservable of the scalar values.</returns>
         /// <param name="This">An observable of result set rows.</param>
-        public static IObservable<short> SelectScalarShort(this IObservable<IReadOnlyList<IResultSetValue>> This) =>
+        public static IObservable<short> SelectScalarShort(this IObservable<IReadOnlyList<ResultSetValue>> This) =>
             This.SelectScalar().Select(x => x.ToShort());
 
 
@@ -164,7 +164,7 @@ namespace SQLitePCL.pretty
         /// </summary>
         /// <returns>An IObservable of the scalar values.</returns>
         /// <param name="This">An observable of result set rows.</param>
-        public static IObservable<sbyte> SelectScalarSByte(this IObservable<IReadOnlyList<IResultSetValue>> This) =>
+        public static IObservable<sbyte> SelectScalarSByte(this IObservable<IReadOnlyList<ResultSetValue>> This) =>
             This.SelectScalar().Select(x => x.ToSByte());
 
         /// <summary>
@@ -172,7 +172,7 @@ namespace SQLitePCL.pretty
         /// </summary>
         /// <returns>An IObservable of the scalar values.</returns>
         /// <param name="This">An observable of result set rows.</param>
-        public static IObservable<Guid> SelectScalarGuid(this IObservable<IReadOnlyList<IResultSetValue>> This) =>
+        public static IObservable<Guid> SelectScalarGuid(this IObservable<IReadOnlyList<ResultSetValue>> This) =>
             This.SelectScalar().Select(x => x.ToGuid());
 
         /// <summary>
@@ -180,7 +180,7 @@ namespace SQLitePCL.pretty
         /// </summary>
         /// <returns>An IObservable of the scalar values.</returns>
         /// <param name="This">An observable of result set rows.</param>
-        public static IObservable<Uri> SelectScalarUri(this IObservable<IReadOnlyList<IResultSetValue>> This) =>
+        public static IObservable<Uri> SelectScalarUri(this IObservable<IReadOnlyList<ResultSetValue>> This) =>
             This.SelectScalar().Select(x => x.ToUri());
     }
 }

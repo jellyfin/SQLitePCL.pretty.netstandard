@@ -98,14 +98,14 @@ namespace SQLitePCL.pretty
         /// <param name="This">The statements.</param>
         /// <param name="values">The position indexed values to bind.</param>
         /// <returns>An <see cref="IEnumerable&lt;T&gt;"/> of rows in the result set.</returns>
-        public static IEnumerable<IReadOnlyList<IResultSetValue>> Query(
+        public static IEnumerable<IReadOnlyList<ResultSetValue>> Query(
             this IStatement This,
             params object[] values)
         {
             Contract.Requires(This != null);
             Contract.Requires(values != null);
 
-            return new DelegatingEnumerable<IReadOnlyList<IResultSetValue>>(() =>
+            return new DelegatingEnumerable<IReadOnlyList<ResultSetValue>>(() =>
                 {
                     This.Reset();
                     This.ClearBindings();
@@ -119,11 +119,11 @@ namespace SQLitePCL.pretty
         /// </summary>
         /// <param name="This">The statements.</param>
         /// <returns>An <see cref="IEnumerable&lt;T&gt;"/> of rows in the result set.</returns>
-        public static IEnumerable<IReadOnlyList<IResultSetValue>> Query(this IStatement This)
+        public static IEnumerable<IReadOnlyList<ResultSetValue>> Query(this IStatement This)
         {
             Contract.Requires(This != null);
 
-            return new DelegatingEnumerable<IReadOnlyList<IResultSetValue>>(() =>
+            return new DelegatingEnumerable<IReadOnlyList<ResultSetValue>>(() =>
                 {
                     This.Reset();
                     return This.Enumerate();
@@ -131,7 +131,7 @@ namespace SQLitePCL.pretty
         }
 
         // Prevents the statement from being disposed when the enumerator is disposed
-        private static IEnumerator<IReadOnlyList<IResultSetValue>> Enumerate(this IStatement This)
+        private static IEnumerator<IReadOnlyList<ResultSetValue>> Enumerate(this IStatement This)
         {
             while (This.MoveNext())
             {
