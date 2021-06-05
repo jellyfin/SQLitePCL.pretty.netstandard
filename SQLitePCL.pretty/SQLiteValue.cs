@@ -370,6 +370,94 @@ namespace SQLitePCL.pretty
             var text = This.ToString();
             return new Uri(text);
         }
+
+        /// <summary>
+        /// Returns the SQLiteValue as a <see cref="bool"/>.
+        /// </summary>
+        public static bool ToBool(this ResultSetValue This)
+            => Convert.ToBoolean(This.ToInt64());
+
+        /// <summary>
+        /// Returns the SQLiteValue as a <see cref="float"/>.
+        /// </summary>
+        public static float ToFloat(this ResultSetValue This)
+            => (float)This.ToDouble();
+
+        /// <summary>
+        /// Returns the SQLiteValue as a <see cref="TimeSpan"/>.
+        /// </summary>
+        public static TimeSpan ToTimeSpan(this ResultSetValue This)
+            => new TimeSpan(This.ToInt64());
+
+        /// <summary>
+        /// Returns the SQLiteValue as a <see cref="DateTime"/>.
+        /// </summary>
+        public static DateTime ToDateTime(this ResultSetValue This)
+            => new DateTime(This.ToInt64());
+
+        /// <summary>
+        /// Returns the SQLiteValue as a <see cref="DateTimeOffset"/>.
+        /// </summary>
+        public static DateTimeOffset ToDateTimeOffset(this ResultSetValue This)
+            => new DateTimeOffset(This.ToInt64(), TimeSpan.Zero);
+
+        /// <summary>
+        /// Returns the SQLiteValue as a <see cref="uint"/>.
+        /// </summary>
+        public static uint ToUInt32(this ResultSetValue This)
+            => Convert.ToUInt32(This.ToInt64());
+
+        /// <summary>
+        /// Returns the SQLiteValue as a <see cref="decimal"/>.
+        /// </summary>
+        public static decimal ToDecimal(this ResultSetValue This)
+            => Convert.ToDecimal(This.ToDouble());
+
+        /// <summary>
+        /// Returns the SQLiteValue as a <see cref="byte"/>.
+        /// </summary>
+        public static byte ToByte(this ResultSetValue This)
+            => Convert.ToByte(This.ToInt64());
+
+        /// <summary>
+        /// Returns the SQLiteValue as a <see cref="UInt16"/>.
+        /// </summary>
+        public static UInt16 ToUInt16(this ResultSetValue This)
+            => Convert.ToUInt16(This.ToInt64());
+
+        /// <summary>
+        /// Returns the SQLiteValue as a <see cref="short"/>.
+        /// </summary>
+        public static short ToShort(this ResultSetValue This)
+            => Convert.ToInt16(This.ToInt64());
+
+        /// <summary>
+        /// Returns the SQLiteValue as a <see cref="sbyte"/>.
+        /// </summary>
+        public static sbyte ToSByte(this ResultSetValue This)
+            => Convert.ToSByte(This.ToInt64());
+
+        /// <summary>
+        /// Returns the SQLiteValue as a <see cref="Guid"/>.
+        /// </summary>
+        public static Guid ToGuid(this ResultSetValue This)
+        {
+            if (!Utf8Parser.TryParse(This.ToBlob(), out Guid value, out _))
+            {
+                ThrowHelper.ThrowFormatException();
+            }
+
+            return value;
+        }
+
+        /// <summary>
+        /// Returns the SQLiteValue as a <see cref="Uri"/>.
+        /// </summary>
+        public static Uri ToUri(this ResultSetValue This)
+        {
+            var text = This.ToString();
+            return new Uri(text);
+        }
     }
 
     internal readonly struct NativeValue : ISQLiteValue

@@ -121,6 +121,9 @@ namespace SQLitePCL.pretty.Tests
         [InlineData(-195489100.8377)]
         [InlineData(1.12345678901234567E100)]
         [InlineData(-1.12345678901234567E100)]
+        [InlineData(float.MaxValue)]
+        [InlineData(float.MinValue)]
+        [InlineData(float.Epsilon)]
         [InlineData(double.MaxValue)]
         [InlineData(double.MinValue)]
         [InlineData(double.Epsilon)]
@@ -139,9 +142,9 @@ namespace SQLitePCL.pretty.Tests
                     var expected = row.Single();
                     var result = value.ToSQLiteValue();
 
-                    Assert.Throws<NotSupportedException>(() => { var x = result.Length; });
-                    Assert.Throws<NotSupportedException>(() => { result.ToString(); });
-                    Assert.Throws<NotSupportedException>(() => { result.ToBlob(); });
+                    Assert.Throws<NotSupportedException>(() => result.Length);
+                    Assert.Throws<NotSupportedException>(() => result.ToString());
+                    Assert.Throws<NotSupportedException>(() => result.ToBlob());
 
                     Assert.Equal(result.SQLiteType, expected.SQLiteType);
                     Assert.Equal(result.ToInt64(), expected.ToInt64());
@@ -225,7 +228,7 @@ namespace SQLitePCL.pretty.Tests
 
                 foreach (var row in db.Query("SELECT x FROM foo;"))
                 {
-                    compare(test, row.First());
+                    compare(test, row[0]);
                 }
                 db.Execute("DROP TABLE foo;");
             }
